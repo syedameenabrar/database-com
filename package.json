@@ -1,0 +1,23 @@
+{
+  "name": "common-function-api",
+  "version": "1.0.17",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Error Handling",
+    "API Features",
+    "Global Errors",
+    "Global Level Paginations",
+    "API Responser"
+  ],
+  "author": "usman pasha",
+  "license": "ISC",
+  "dependencies": {
+    "cloudinary": "^2.2.0",
+    "mongoose": "^8.4.4",
+    "uuid": "^10.0.0"
+  }
+}
