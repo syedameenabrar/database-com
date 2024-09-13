@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const logger = require("./logs");
 mongoose.set('strictQuery', false);
+mongoose.set('strictPopulate', false);
 
 logger.info("Connecting to Database...");
 module.exports.openDBConnection = async (url) => {

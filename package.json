@@ -1,6 +1,6 @@
 {
-  "name": "common-function-api",
-  "version": "1.0.17",
+  "name": "database-connection-function-com",
+  "version": "1.0.3",
   "description": "",
   "main": "index.js",
   "scripts": {
