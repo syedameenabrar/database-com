@@ -74,26 +74,73 @@ class APIFeatures {
         return this;
     }
 
+    // filter() {
+    //     const queryObj = { ...this.queryString };
+    //     const excludedFields = ["page", "sort", "limit", "fields"];
+    //     excludedFields.forEach((el) => delete queryObj[el]);
+    //     // Advanced filtering
+    //     for (let field in queryObj) {
+    //         if (
+    //             (typeof queryObj[field] === "string" ||
+    //                 queryObj[field] instanceof String) &&
+    //             queryObj[field].split("||").length > 1
+    //         ) {
+    //             queryObj[field] = { $in: queryObj[field].split("||") };
+    //         }
+    //     }
+    //     let queryStr = JSON.stringify(queryObj);
+    //     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    //     this.filter = JSON.parse(queryStr);
+    //     return this;
+    // }
+
+
     filter() {
         const queryObj = { ...this.queryString };
         const excludedFields = ["page", "sort", "limit", "fields"];
         excludedFields.forEach((el) => delete queryObj[el]);
-        // Advanced filtering
-        for (let field in queryObj) {
-            if (
-                (typeof queryObj[field] === "string" ||
-                    queryObj[field] instanceof String) &&
-                queryObj[field].split("||").length > 1
-            ) {
-                queryObj[field] = { $in: queryObj[field].split("||") };
-            }
+        console.log("queryObj...++--**&",queryObj)
+      
+        // Date range filtering for createdAt
+        if (queryObj.startDate && queryObj.endDate) {
+          // Parse the date range
+          const [startDay, startMonth, startYear] = queryObj.startDate.split("/");
+          const [endDay, endMonth, endYear] = queryObj.endDate.split("/");
+      
+          // Convert to Date objects
+          const startDate = new Date(`${startYear}-${startMonth}-${startDay}T00:00:00Z`);
+          const endDate = new Date(`${endYear}-${endMonth}-${endDay}T23:59:59Z`);
+      
+          // Add date range filter to queryObj
+          queryObj.createdAt = {
+            $gte: startDate,
+            $lte: endDate,
+          };
+      
+          // Remove the startDate and endDate from queryObj
+          delete queryObj.startDate;
+          delete queryObj.endDate;
         }
+      
+        // Replace any query operators (gte, lte, gt, lt) with the proper MongoDB operators
         let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+        console.log("queryStr...++--",queryStr)
+        // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => $${match});
+      
+        // Parse the query string back into an object for the filter
         this.filter = JSON.parse(queryStr);
+        
         return this;
-    }
+      }
+    // ?startDate=2025-10-01&endDate=2025-11-01
 
+
+    convertStringToComparable(dateString) {
+        const [day, month, year] = dateString.split("/");
+        if (!day || !month || !year) return null;
+        return `${year}${month.padStart(2, "0")}${day.padStart(2, "0")}`; // YYYYMMDD
+    }
+    
     populate(params) {
         if (!this.options) this.options = {};
         this.options.populate = params;
